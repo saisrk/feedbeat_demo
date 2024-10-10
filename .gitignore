@@ -1,0 +1,8 @@
+/__pycache__
+# python streamlit files to ignore
+*.pyc
+
+*.DS_Store
+/.vscode
+/env
+/venv
