@@ -19,6 +19,7 @@ class StreamService:
         elif type == "consumer":
             self.stream = KafkaConsumer(
                 bootstrap_servers=kafka_bootstrap_servers,
+                value_deserializer=lambda v: json.loads(v.decode('utf-8')),
                 security_protocol="SASL_SSL",
                 sasl_mechanism="SCRAM-SHA-256",
                 sasl_plain_username="feedbeat",
@@ -50,18 +51,10 @@ class StreamService:
     def close(self):
         self.stream.close()
 
+    # def __del__(self):
+    #     self.flush()
+    #     self.close()
 
-def bulk_stream(kafka_service, messages):
-    for message in messages:
-        kafka_service.send_message(message)
-
-def bulk_consume(kafka_service):
-    return kafka_service.consume_message()
-
-def start_consumer_thread(kafka_service, result):
-    consumer_thread = threading.Thread(target=kafka_service.consume_message)
-    consumer_thread.start()
-    return consumer_thread
 
 def get_stream_service(kafka_bootstrap_servers, kafka_topic, type):
     return StreamService(kafka_bootstrap_servers, kafka_topic, type)

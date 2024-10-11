@@ -1,6 +1,7 @@
 import nltk
 nltk.download('vader_lexicon')
 nltk.download('punkt')
+# nltk.download('punkt_tab')
 nltk.download('stopwords')
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
@@ -30,8 +31,8 @@ def get_sentiment(text: str):
         return 'neutral'
     
 def analyze_comments(comments: list[str]):
-    processed_comments = [preprocess_comment(comment) for comment in comments]
-    sentiments = [get_sentiment(comment) for comment in processed_comments]
+    processed_comments = [preprocess_comment(comment['comment']) for comment in comments]
+    sentiments = [get_sentiment(comment['comment']) for comment in comments]
     neutral_count = sentiments.count('neutral')
     positive_count = sentiments.count('positive')
     negative_count = sentiments.count('negative')

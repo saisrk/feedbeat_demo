@@ -4,7 +4,7 @@ class YoutubeService:
     def __init__(self):
         self.youtube = googleapiclient.discovery.build("youtube", "v3", developerKey='AIzaSyCETNXLNfEQ3sylHHjLTZtg9VhHkuKNVjE')
 
-    def get_video_comments(self, video_id):
+    def get_video_comment_stats(self, video_id):
         """
         Get comments from a YouTube video using the YouTube Data API.
 
@@ -38,7 +38,8 @@ class YoutubeService:
                     "likes": item["snippet"]["topLevelComment"]["snippet"]["likeCount"],
                     "published_date": item["snippet"]["topLevelComment"]["snippet"]["publishedAt"],
                     "updated_date": item["snippet"]["topLevelComment"]["snippet"]["updatedAt"],
-                    "replies": item["snippet"]["totalReplyCount"]
+                    "replies": item["snippet"]["totalReplyCount"],
+                    "video_id": video_id,
                 })
 
             # Check if there are more pages
@@ -102,10 +103,20 @@ class YoutubeService:
             'channel_logo_url': channel_logo_url,
             'channel_created_date': channel_created_date,
             'subscriber_count': subscriber_count,
-            'channel_description': channel_description
+            'channel_description': channel_description,
         }
 
         return channel_info
     
+    def __del__(self):
+        self.youtube.close()
+    
 def get_youtube_service():
     return YoutubeService()
+
+def bulk_yt_stream(kafka_service, messages):
+    for message in messages:
+        kafka_service.send_message(message)
+
+def bulk_yt_consume(kafka_service):
+    return kafka_service.consume_message()
